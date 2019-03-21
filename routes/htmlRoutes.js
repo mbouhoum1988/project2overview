@@ -22,7 +22,7 @@ module.exports = function(app) {
     res.redirect("/");
   });
 
-  app.post("/api/food", function(res, req) {
+  app.post("/api/food", function(req, res) {
     db.Example.create({
       text: req.body.text,
       description: req.body.description

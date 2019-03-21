@@ -15,16 +15,42 @@
   }
 
   #results {
+    margin: 20px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 30px;
+    min-width: 30%;
+  }
+  
+  #resultsshow {
+    display: none;
     background: #fff;
-    margin: 20px 0;
+    margin: 20px;
+    padding: 30px;
+    margin-bottom: 40px;
   }
 
   #shows {
     display: none;
     background: whitesmoke;
-    margin: 20px 0;
+    margin: 20px;
     padding: 20px;
     min-height: 200px;
+    margin-bottom: 50px;
+  }
+
+  #addname {
+    margin: 20px;
+  }
+
+  #display {
+    margin: 20px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 20px;
+    min-width: 30%;
   }
 
   .insertImage {
@@ -44,6 +70,7 @@
   .mybutton{
     width: 70%;
   }
+
   
   @media (max-width:767px) {
     .features-boxed h2 {

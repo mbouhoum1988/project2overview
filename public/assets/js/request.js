@@ -1,84 +1,98 @@
 var searchQuery;
-      $("#searchRecipeButton").on("click", function(event) {
-        event.preventDefault();
-        searchQuery = $("#searchRecipe").val().trim();
+$("#searchRecipeButton").on("click", function(event) {
+  event.preventDefault();
+  searchQuery = $("#searchRecipe")
+    .val()
+    .trim();
 
-        var queryURL = "https://www.food2fork.com/api/search?key=f138a3cb85c879f8b2af9455ce4f2913&q=" + searchQuery;
+  var queryURL = "https://api.edamam.com/search?q="; 
+  queryURL += searchQuery; 
+  queryURL += "&app_id=cfbcb06c&app_key=df0452d2212b0c38ac05a429fc61c3af";
 
-        $.ajax({
-          url: queryURL,
-          method: "GET"
-        })
-          .then(function(response) {
+  console.log(queryURL);
+  $.ajax({
+    url: queryURL,
+    method: "GET"
+  }).then(function(response) {
+    var total = 9;
 
-            var result = JSON.parse(response);
-            var total = 6;
+    $("#results").empty();
 
-            $("#results").empty();
+    for (var i = 0; i < total; i++) {
+      var recipes = response.hits[i];
+      var recipeRow = $("<div class='row'></div>");
 
-            for (var i = 0; i < total; i++) {
-              var recipe = result.recipes[i];
-              var recipeRow = $("<div class='row'></div>");
-              var btn = $("<button class='btn btn-default addbutton'>add to your list</button>")
-              var image_url = recipe.image_url;
-              var image = $("<img>");
-              image.addClass("insertImage keepElement");
-              image.attr("src", image_url);
+      var imageUrl = recipes.recipe.image;
+      var image = $("<img>");
+      image.addClass("insertImage keepElement");
+      image.attr("src", imageUrl);
 
-              var name = $("<h5>");
-              name.addClass("title");
-              name.html(recipe.title);
+      var name = $("<h5>");
+      name.addClass("title");
+      name.html(recipes.recipe.label);
 
-              recipeRow.append(name);
-              recipeRow.append(image);
-              recipeRow.append(
-                $(`
-                <a class="keepElement recipeLink" href="${recipe.source_url}">
-                  ${recipe.title}
-                </a>
-              `));
-              recipeRow.append(btn);
+      var link = $("<a>" + recipes.recipe.label + "</a>");
+      link.addClass("keepElement recipeLink");
+      link.attr("href", recipes.recipe.url);
 
-              $("#results").append(recipeRow);
-            }
+      var btn = $(
+        "<button class='btn btn-default addbutton'>add to your list</button>"
+      );
 
-            $(".addbutton").on("click", function () {
-                
-                 var addname = $("<div>");
-                 var addtitle = $(this).parent().children(".title");
-                 var addimage = $(this).parent().children(".insertImage");
-                 var addlink = $(this).parent().children(".recipeLink");
-                 var addbtn = $(this).parent().children(".btn");
+      recipeRow.append(name);
+      recipeRow.append(image);
+      recipeRow.append(link);
+      recipeRow.append(btn);
 
-                 var datatitle = $(this).parent().children(".title").val();
-                 var datalink = $(this).parent().children(".recipeLink").val();
+      $("#resultsshow").show();
+      $("#results").append(recipeRow);
+    }
 
-                 var addPost = {
-                  text: datatitle,
-                  description: datalink
-                  };
+    $(".addbutton").on("click", function() {
+      var addname = $("<div id='addname'>");
+      var addtitle = $(this)
+        .parent()
+        .children(".title");
+      var addimage = $(this)
+        .parent()
+        .children(".insertImage");
+      var addlink = $(this)
+        .parent()
+        .children(".recipeLink");
+      var addbtn = $(this)
+        .parent()
+        .children(".btn");
 
-                  console.log(addPost);
+      var datatitle = $(this)
+        .parent()
+        .children(".title")
+        .html();
+      var datalink = $(this)
+        .parent()
+        .children(".recipeLink")
+        .attr("href");
 
-                 addname.append(addtitle);
-                 addname.append(addimage);
-                 addname.append(addlink);
-                 addname.append(addbtn);
-                 
-                 $("#display").append(addname);
+      var addPost = {
+        text: datatitle,
+        description: datalink
+      };
 
-                
-                 addname.children(".btn").remove(); 
-                $("#shows").show();
+      console.log(addPost);
 
-                $.ajax("/api/food",
-                {
-                  method: "post",
-                  data: addPost
-                }).then(function() {
+      addname.append(addtitle);
+      addname.append(addimage);
+      addname.append(addlink);
+      addname.append(addbtn);
 
-                });
-            });
-        });
+      $("#display").append(addname);
 
-      });
+      addname.children(".btn").remove();
+      $("#shows").show();
+
+      $.ajax("/api/food", {
+        method: "post",
+        data: addPost
+      }).then(function(){});
+    });
+  });
+});
